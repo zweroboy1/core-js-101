@@ -140,10 +140,16 @@ function removeFirstOccurrences(str, value) {
  *   '<span>' => 'span'
  *   '<a>' => 'a'
  */
-function unbracketTag(/* str */) {
-  throw new Error('Not implemented');
+function unbracketTag(str) {
+  let result = str;
+  if (result.charAt(0) === '<') {
+    result = result.slice(1);
+  }
+  if (result.charAt(result.length - 1) === '>') {
+    result = result.slice(0, -1);
+  }
+  return result;
 }
-
 
 /**
  * Converts all characters of the specified string into the upper case

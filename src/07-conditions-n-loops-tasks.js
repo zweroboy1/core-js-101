@@ -130,8 +130,31 @@ function isTriangle(a, b, c) {
  *   { top:20, left:20, width: 20, height: 20 }    =>  false
  *
  */
-function doRectanglesOverlap(/* rect1, rect2 */) {
-  throw new Error('Not implemented');
+function doRectanglesOverlap(rect1, rect2) {
+  const isDotIn = (X, Y, [x1, y1, x2, y2]) => X >= x1 && X <= x2 && Y >= y1 && Y <= y2;
+
+  const r1 = {
+    top: rect1.top,
+    left: rect1.left,
+    bottom: rect1.top + rect1.height,
+    right: rect1.left + rect1.width,
+  };
+
+  const r2 = {
+    top: rect2.top,
+    left: rect2.left,
+    bottom: rect2.top + rect2.height,
+    right: rect2.left + rect2.width,
+  };
+
+  return isDotIn(r2.top, r2.left, Object.values(r1))
+      || isDotIn(r2.bottom, r2.left, Object.values(r1))
+      || isDotIn(r2.top, r2.right, Object.values(r1))
+      || isDotIn(r2.bottom, r2.right, Object.values(r1))
+      || isDotIn(r1.top, r1.left, Object.values(r2))
+      || isDotIn(r1.bottom, r1.left, Object.values(r2))
+      || isDotIn(r1.top, r1.right, Object.values(r2))
+      || isDotIn(r1.bottom, r1.right, Object.values(r2));
 }
 
 

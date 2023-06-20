@@ -521,10 +521,13 @@ function distinct(arr) {
  *    "Poland" => ["Lodz"]
  *   }
  */
-function group(/* array, keySelector, valueSelector */) {
-  throw new Error('Not implemented');
+function group(array, keySelector, valueSelector) {
+  const multimap = new Map();
+  array.map((item) => multimap.set(keySelector(item),
+    array.filter((item2) => keySelector(item) === keySelector(item2))
+      .map((el) => valueSelector(el))));
+  return multimap;
 }
-
 
 /**
  * Projects each element of the specified array to a sequence

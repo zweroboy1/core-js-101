@@ -230,8 +230,21 @@ function findFirstSingleChar(str) {
  *   5, 3, true, true   => '[3, 5]'
  *
  */
-function getIntervalString(/* a, b, isStartIncluded, isEndIncluded */) {
-  throw new Error('Not implemented');
+function getIntervalString(a, b, isStartIncluded, isEndIncluded) {
+  let first = a;
+  let second = b;
+  let start = isStartIncluded;
+  let end = isEndIncluded;
+  if (a > b) {
+    first = b;
+    second = a;
+    start = isEndIncluded;
+    end = isStartIncluded;
+  }
+  let result = start ? '[' : '(';
+  result += `${first}, ${second}`;
+  result += end ? ']' : ')';
+  return result;
 }
 
 

@@ -499,8 +499,26 @@ function getMatrixProduct(m1, m2) {
  *    [    ,   ,    ]]
  *
  */
-function evaluateTicTacToePosition(/* position */) {
-  throw new Error('Not implemented');
+function evaluateTicTacToePosition(p) {
+  const options = [
+    `${p[0][0]}${p[0][1]}${p[0][2]}`,
+    `${p[1][0]}${p[1][1]}${p[1][2]}`,
+    `${p[2][0]}${p[2][1]}${p[2][2]}`,
+
+    `${p[0][0]}${p[1][0]}${p[2][0]}`,
+    `${p[0][1]}${p[1][1]}${p[2][1]}`,
+    `${p[0][2]}${p[1][2]}${p[2][2]}`,
+
+    `${p[0][0]}${p[1][1]}${p[2][2]}`,
+    `${p[0][2]}${p[1][1]}${p[2][0]}`,
+  ];
+  if (options.includes('XXX')) {
+    return 'X';
+  }
+  if (options.includes('000')) {
+    return '0';
+  }
+  return undefined;
 }
 
 

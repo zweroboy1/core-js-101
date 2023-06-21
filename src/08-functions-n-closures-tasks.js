@@ -179,7 +179,7 @@ function partialUsingArguments(fn, ...args1) {
  *
  * @example
  *   const getId4 = getIdGenerator(4);
- *   const getId10 = gerIdGenerator(10);
+ *   const getId10 = getIdGenerator(10);
  *   getId4() => 4
  *   getId10() => 10
  *   getId4() => 5
@@ -187,8 +187,12 @@ function partialUsingArguments(fn, ...args1) {
  *   getId4() => 7
  *   getId10() => 11
  */
-function getIdGeneratorFunction(/* startFrom */) {
-  throw new Error('Not implemented');
+function getIdGeneratorFunction(startFrom) {
+  let counter = startFrom - 1;
+  return () => {
+    counter += 1;
+    return counter;
+  };
 }
 
 

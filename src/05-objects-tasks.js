@@ -103,11 +103,7 @@ function fromJSON(proto, json) {
  *      builder.combine(
  *          builder.element('table').id('data'),
  *          '~',
- *           builder.combine(
- *               builder.element('tr').pseudoClass('nth-of-type(even)'),
- *               ' ',
- *               builder.element('td').pseudoClass('nth-of-type(even)')
- *           )
+ *           selector1, combinator, selector2
  *      )
  *  ).stringify()
  *    => 'div#main.container.draggable + table#data ~ tr:nth-of-type(even)   td:nth-of-type(even)'
@@ -115,36 +111,137 @@ function fromJSON(proto, json) {
  *  For more examples see unit tests.
  */
 
-const cssSelectorBuilder = {
-  element(/* value */) {
-    throw new Error('Not implemented');
-  },
+class CssBuilder {
+  constructor() {
+    this.initAll();
+  }
 
-  id(/* value */) {
-    throw new Error('Not implemented');
-  },
+  onlyOneError() {
+    this.initAll();
+    throw Error('Element, id and pseudo-element should not occur more then one time inside the selector');
+  }
 
-  class(/* value */) {
-    throw new Error('Not implemented');
-  },
+  checkOrder(order) {
+    if (this.order > order) {
+      throw Error('Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element');
+    }
+    this.order = order;
+  }
 
-  attr(/* value */) {
-    throw new Error('Not implemented');
-  },
+  element(value) {
+    if (this.tag) {
+      this.onlyOneError();
+    }
+    this.checkOrder(1);
+    this.tag = value;
+    this.updateSelector();
+    return this;
+  }
 
-  pseudoClass(/* value */) {
-    throw new Error('Not implemented');
-  },
+  id(value) {
+    if (this.identificator) {
+      this.onlyOneError();
+    }
+    this.checkOrder(2);
+    this.identificator = value;
+    this.updateSelector();
+    return this;
+  }
 
-  pseudoElement(/* value */) {
-    throw new Error('Not implemented');
-  },
+  class(value) {
+    if (!this.classes) {
+      this.classes = [];
+    }
+    this.checkOrder(3);
+    this.classes.push(value);
+    this.updateSelector();
+    return this;
+  }
 
-  combine(/* selector1, combinator, selector2 */) {
-    throw new Error('Not implemented');
-  },
-};
+  attr(value) {
+    if (!this.attributes) {
+      this.attributes = [];
+    }
+    this.checkOrder(4);
+    this.attributes.push(value);
+    this.updateSelector();
+    return this;
+  }
 
+  pseudoClass(value) {
+    if (!this.psClasses) {
+      this.psClasses = [];
+    }
+    this.checkOrder(5);
+    this.psClasses.push(value);
+    this.updateSelector();
+    return this;
+  }
+
+  pseudoElement(value) {
+    if (this.psElement) {
+      this.onlyOneError();
+    }
+    this.checkOrder(6);
+    this.psElement = value;
+    this.updateSelector();
+    return this;
+  }
+
+  combine(selector1, combinator, selector2) {
+    this.selector = `${selector1.stringify()} ${combinator} ${selector2.stringify()}`;
+    return this;
+  }
+
+  stringify() {
+    const { selector } = this;
+    this.initAll();
+    return selector;
+  }
+
+  initAll() {
+    this.tag = null;
+    this.classes = [];
+    this.identificator = null;
+    this.attributes = [];
+    this.psClasses = [];
+    this.psElement = null;
+    this.selector = '';
+    this.order = 0;
+  }
+
+  updateSelector() {
+    let selector = '';
+    if (this.tag) {
+      selector += this.tag;
+    }
+    if (this.attributes.length) {
+      selector += `[${this.attributes.join('][')}]`;
+    }
+    if (this.identificator) {
+      selector += `#${this.identificator}`;
+    }
+    if (this.classes.length) {
+      selector += this.classes.map((el) => `.${el}`).join('');
+    }
+    if (this.psClasses.length) {
+      selector += this.psClasses.map((el) => `:${el}`).join('');
+    }
+    if (this.psElement) {
+      selector += `::${this.psElement}`;
+    }
+    this.selector = selector;
+  }
+}
+
+const cssSelectorBuilder = {};
+
+['element', 'id', 'class', 'attr', 'pseudoClass', 'pseudoElement', 'combine', 'stringify'].forEach((func) => {
+  cssSelectorBuilder[func] = (...args) => {
+    const cssBuilder = new CssBuilder();
+    return cssBuilder[func](...args);
+  };
+});
 
 module.exports = {
   Rectangle,

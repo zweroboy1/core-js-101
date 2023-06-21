@@ -81,10 +81,15 @@ function getPolynom(...coefficients) {
  *   ...
  *   memoizer() => the same random number  (next run, returns the previous cached result)
  */
-function memoize(/* func */) {
-  throw new Error('Not implemented');
+function memoize(func) {
+  const cache = new Map();
+  return (...args) => {
+    if (!cache.has(func)) {
+      cache.set(func, func(...args));
+    }
+    return cache.get(func);
+  };
 }
-
 
 /**
  * Returns the function trying to call the passed function and if it throws,
